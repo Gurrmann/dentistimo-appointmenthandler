@@ -18,7 +18,18 @@ client.on('message', function (topic, message) {
 
 var checkBooking = (timeSlot) => {
 
-notifyUser()
+  var appointment = Appointment.find({ dentistry: timeSlot.dentistid, timeSlot: timeSlot.timeSlot }, )
+  var bookingExist
+  
+  if (appointment === null) {
+    bookingExist = false
+    saveAppointment(timeSlot)
+    notifyUser(bookingExist, appointment.userid)
+  }
+  else {
+    bookingExist = true
+    notifyUser(bookingExist, appointment.userid)
+  }
 }
 
 var notifyUser = (bookingExist, userid) => {
