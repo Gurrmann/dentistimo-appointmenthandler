@@ -10,13 +10,15 @@ client.on('connect', function () {
 })
 
 client.on('message', function (topic, message) {
-  message = JSON.parse(message)
+  var timeSlot = JSON.parse(message)
+  checkBooking(timeSlot)
+
 
 })
 
-var checkBooking = () = => {
+var checkBooking = (timeSlot) => {
 
-  notifyUser(true,'')
+notifyUser()
 }
 
 var notifyUser = (bookingExist, userid) => {
@@ -24,5 +26,5 @@ var notifyUser = (bookingExist, userid) => {
   let bookingSuccess = 'Your selected time has been booked!'
   let bookingFailed = 'This timeslot is already booked please try a new one!'
 
-  client.publish(userid, bookingExist ? bookingFailed: bookingSuccess)
+  client.publish(userid, bookingExist ? bookingFailed : bookingSuccess)
 }
