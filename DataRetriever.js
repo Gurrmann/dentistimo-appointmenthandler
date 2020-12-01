@@ -14,10 +14,15 @@ client.on('message', function (topic, message) {
 
 })
 
-var notify = (bookingComplete) => {
+var checkBooking = () = => {
+
+  notifyUser(true,'')
+}
+
+var notifyUser = (bookingExist, userid) => {
 
   let bookingSuccess = 'Your selected time has been booked!'
   let bookingFailed = 'This timeslot is already booked please try a new one!'
 
-  client.publish('', bookingComplete ? bookingSuccess : bookingFailed)
+  client.publish(userid, bookingExist ? bookingFailed: bookingSuccess)
 }
