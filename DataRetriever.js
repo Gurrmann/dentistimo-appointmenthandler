@@ -13,3 +13,11 @@ client.on('message', function (topic, message) {
   message = JSON.parse(message)
 
 })
+
+var notify = (bookingComplete) => {
+
+  let bookingSuccess = 'Your selected time has been booked!'
+  let bookingFailed = 'This timeslot is already booked please try a new one!'
+
+  client.publish('', bookingComplete ? bookingSuccess : bookingFailed)
+}
