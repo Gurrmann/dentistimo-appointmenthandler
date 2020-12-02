@@ -53,8 +53,8 @@ var saveAppointment = (data) => {
 
 var notifyUser = (bookingExist, userid) => {
 
-  let bookingSuccess = 'Your selected time has been booked!'
-  let bookingFailed = 'This timeslot is already booked please try a new one!'
+  let bookingSuccess = '{"msg": "Your selected time has been booked!"}'
+  let bookingFailed = '{"msg": "This timeslot is already booked please try a new one!"}'
 
   client.publish(userid, bookingExist ? bookingFailed : bookingSuccess)
 }
