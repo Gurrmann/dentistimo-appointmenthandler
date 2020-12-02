@@ -2,9 +2,7 @@ var mqtt = require('mqtt')
 var client = mqtt.connect('mqtt://test.mosquitto.org')
 var mongoose = require('mongoose')
 mongoose.connect('mongodb://localhost/dentistimoDB')
-var db = mongoose.connection;
-var Appointment = require('./models/appointment');
-
+var Appointment = require('./models/appointment')
 
 client.on('connect', function () {
   client.subscribe('validBookingRequest')
@@ -13,8 +11,6 @@ client.on('connect', function () {
 client.on('message', function (topic, message) {
   var timeSlot = JSON.parse(message)
   checkBooking(timeSlot)
-
-
 })
 
 var checkBooking = (booking) => {
@@ -26,15 +22,14 @@ var checkBooking = (booking) => {
     if (result.length === 0) {
       bookingExist = false
       saveAppointment(booking)
-      notifyUser(bookingExist, booking.userid)
+      notifyUser(bookingExist, booking)
     }
     else {
       bookingExist = true
-      notifyUser(bookingExist, booking.userid)
+      notifyUser(bookingExist, booking)
     }
   })
 }
-
 
 var saveAppointment = (data) => {
   var appointmentData = {
@@ -50,10 +45,10 @@ var saveAppointment = (data) => {
   })
 }
 
-var notifyUser = (bookingExist, userid) => {
+var notifyUser = (bookingExist, booking) => {
+  var time = booking.time.split(' ')[1]
+  let bookingSuccess = `{"userid": ${booking.userid}, "requestid": ${booking.requestid}, "time": ${time}}`
+  let bookingFailed = `{"userid": ${booking.userid}, "requestid": ${booking.requestid}, "time": "none"}`
 
-  let bookingSuccess = '{"msg": "Your selected time has been booked!"}'
-  let bookingFailed = '{"msg": "This timeslot is already booked please try a new one!"}'
-
-  client.publish(`${userid}`, bookingExist ? bookingFailed : bookingSuccess)
+  client.publish(`${booking.userid}`, bookingExist ? bookingFailed : bookingSuccess)
 }
