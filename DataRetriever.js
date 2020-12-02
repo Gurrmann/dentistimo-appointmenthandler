@@ -1,5 +1,5 @@
 var mqtt = require('mqtt')
-var client = mqtt.connect('mqtt://localhost:1883')
+var client = mqtt.connect('mqtt://test.mosquitto.org')
 var mongoose = require('mongoose')
 mongoose.connect('mongodb://localhost/dentistimoDB')
 var db = mongoose.connection;
@@ -12,6 +12,7 @@ client.on('connect', function () {
 
 client.on('message', function (topic, message) {
   var timeSlot = JSON.parse(message)
+  notifyUser(false,'1')
   checkBooking(timeSlot)
 
 
@@ -26,11 +27,11 @@ var checkBooking = (timeSlot) => {
     if (result === null) {
       bookingExist = false
       saveAppointment(timeSlot)
-      notifyUser(bookingExist, appointment.userid)
+      notifyUser(bookingExist, timeSlot.userid)
     }
     else {
       bookingExist = true
-      notifyUser(bookingExist, appointment.userid)
+      notifyUser(bookingExist, timeSlot.userid)
     }
   })
 }
