@@ -17,20 +17,20 @@ client.on('message', function (topic, message) {
 
 })
 
-var checkBooking = (timeSlot) => {
+var checkBooking = (booking) => {
 
-  Appointment.find({ dentistry: timeSlot.dentistid, timeSlot: timeSlot.timeSlot },function(err, result) {
+  Appointment.find({ dentistry: booking.dentistid, timeSlot: booking.time },function(err, result) {
     if (err)
     var bookingExist
 
-    if (result === null) {
+    if (result.length === 0) {
       bookingExist = false
-      saveAppointment(timeSlot)
-      notifyUser(bookingExist, timeSlot.userid)
+      saveAppointment(booking)
+      notifyUser(bookingExist, booking.userid)
     }
     else {
       bookingExist = true
-      notifyUser(bookingExist, timeSlot.userid)
+      notifyUser(bookingExist, booking.userid)
     }
   })
 }
