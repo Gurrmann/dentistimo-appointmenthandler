@@ -3,8 +3,8 @@ var client = mqtt.connect('mqtt://localhost:1883')
 var mongoose = require('mongoose')
 mongoose.connect('mongodb://localhost/dentistimoDB')
 var db = mongoose.connection;
-var Appointment = require('./models/appointments');
-const appointment = require('./models/appointment');
+var Appointment = require('./models/appointment');
+
 
 client.on('connect', function () {
   client.subscribe('validBookingRequest')
@@ -32,7 +32,7 @@ var checkBooking = (timeSlot) => {
       bookingExist = true
       notifyUser(bookingExist, appointment.userid)
     }
-  }
+  })
 }
 
 
