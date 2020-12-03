@@ -47,8 +47,8 @@ var saveAppointment = (data) => {
 
 var notifyUser = (bookingExist, booking) => {
   var time = booking.time.split(' ')[1]
-  let bookingSuccess = `{"userid": ${booking.userid}, "requestid": ${booking.requestid}, "time": ${time}}`
-  let bookingFailed = `{"userid": ${booking.userid}, "requestid": ${booking.requestid}, "time": "none"}`
-
+  let bookingSuccess = `{"msg": "Your appointment was successfully booked"}`
+  let bookingFailed = `{"msg": "This time slot is already booked"}`
+  
   client.publish(`${booking.userid}`, bookingExist ? bookingFailed : bookingSuccess)
 }
