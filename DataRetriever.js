@@ -3,6 +3,7 @@ var client = mqtt.connect('mqtt://test.mosquitto.org')
 var mongoose = require('mongoose')
 mongoose.connect('mongodb://localhost/dentistimoDB')
 var Appointment = require('./models/appointment')
+var Dentistry = require('./models/dentistry')
 
 client.on('connect', function () {
   client.subscribe('validBookingRequest')
@@ -14,12 +15,21 @@ client.on('message', function (topic, message) {
 })
 
 var checkBooking = (booking) => {
+  var dentistNumber = 0
+  // Finds the number of working dentists in the booking's requested dentistry
+  Dentistry.find({id: booking.dentistid}, function(err, result){
+    if(err)
+    if(result !== null){
+      dentistNumber = result.dentists
+    }
+  })
 
+  // Finds the amount of booked appointments on the booking's requested time slot
   Appointment.find({ dentistry: booking.dentistid, timeSlot: booking.time },function(err, result) {
     if (err)
     var bookingExist
 
-    if (result.length === 0) {
+    if (result.length < dentistNumber) {
       bookingExist = false
       saveAppointment(booking)
       notifyUser(bookingExist, booking)
@@ -31,6 +41,7 @@ var checkBooking = (booking) => {
   })
 }
 
+// Saves appointment to the requested time slot
 var saveAppointment = (data) => {
   var appointmentData = {
     dentistry: data.dentistid,
@@ -44,6 +55,7 @@ var saveAppointment = (data) => {
     }
   })
 }
+
 
 var notifyUser = (bookingExist, booking) => {
   var time = booking.time.split(' ')[1]
