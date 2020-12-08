@@ -15,31 +15,28 @@ client.on('message', function (topic, message) {
 })
 
 var checkBooking = (booking) => {
-  var dentistNumber = 0
-  // Finds the number of working dentists in the booking's requested dentistry
-  Dentistry.find({id: booking.dentistid}, function(err, result){
-    if(err)
-    if(result !== null){
-      dentistNumber = result.dentists
+  var dentistNumber = 1
+  if(typeof booking.numberOfDentists !== 'undefined'){
+    dentistNumber = booking.numberOfDentists
+  }
+      
+      // Finds the amount of booked appointments on the booking's requested time slot
+      Appointment.find({ dentistry: booking.dentistid, timeSlot: booking.time},function(err, result) {
+        if (err)
+        var bookingExist
+        if (result.length < dentistNumber) {
+          bookingExist = false
+          saveAppointment(booking)
+          notifyUser(bookingExist, booking)
+        }
+        else {
+          bookingExist = true
+          notifyUser(bookingExist, booking)
+        }
+      })
     }
-  })
+  
 
-  // Finds the amount of booked appointments on the booking's requested time slot
-  Appointment.find({ dentistry: booking.dentistid, timeSlot: booking.time },function(err, result) {
-    if (err)
-    var bookingExist
-
-    if (result.length < dentistNumber) {
-      bookingExist = false
-      saveAppointment(booking)
-      notifyUser(bookingExist, booking)
-    }
-    else {
-      bookingExist = true
-      notifyUser(bookingExist, booking)
-    }
-  })
-}
 
 // Saves appointment to the requested time slot
 var saveAppointment = (data) => {
