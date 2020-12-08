@@ -15,12 +15,15 @@ client.on('message', function (topic, message) {
 })
 
 var checkBooking = (booking) => {
+  //Number of dentists defaults to 1
   var dentistNumber = 1
+  //This if-statement makes sure that the value received from the request's dentist number data is not undefined before updating the value of dentistNumber
   if(typeof booking.numberOfDentists !== 'undefined'){
     dentistNumber = booking.numberOfDentists
   }
       
-      // Finds the amount of booked appointments on the booking's requested time slot
+      // Finds the amount of booked appointments on the booking's requested time slot and checks if the request can be booked by comparing the number to
+      // the amount of dentists working at the requested dentistry.
       Appointment.find({ dentistry: booking.dentistid, timeSlot: booking.time},function(err, result) {
         if (err)
         var bookingExist
