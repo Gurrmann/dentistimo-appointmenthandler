@@ -4,6 +4,10 @@ var mongoose = require('mongoose')
 mongoose.connect('mongodb://localhost/dentistimoDB')
 var Appointment = require('./models/appointment')
 
+var options = {
+  retain: true
+}
+
 client.on('connect', function () {
   client.subscribe('validBookingRequest')
 })
@@ -52,3 +56,13 @@ var notifyUser = (bookingExist, booking) => {
   
   client.publish(`${booking.userid}`, bookingExist ? bookingFailed : bookingSuccess)
 }
+
+setInterval(function(){
+  Appointment.find(function(err, result){
+    if(err){
+      console.log(err)
+    } else {
+      client.publish('appointments', JSON.stringify(result), options)
+    }
+  })
+}, 5000) // 5 sec
