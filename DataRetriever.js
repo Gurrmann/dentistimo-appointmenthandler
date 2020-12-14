@@ -9,8 +9,15 @@ client.on('connect', function () {
 })
 
 client.on('message', function (topic, message) {
-  var timeSlot = JSON.parse(message)
-  checkBooking(timeSlot)
+
+  try {
+    var timeSlot = JSON.parse(message)
+    if(timeSlot!==null && typeof timeSlot==='object') {
+      checkBooking(timeSlot)
+    }
+  } catch (error) {
+
+  }
 })
 
 var checkBooking = (booking) => {
@@ -58,6 +65,6 @@ var notifyUser = (bookingExist, booking) => {
   var time = booking.time.split(' ')[1]
   let bookingSuccess = `{"userid": ${booking.userid}, "requestid": ${booking.requestid}, "time": ${JSON.stringify(time)}}`
   let bookingFailed = `{"userid": ${booking.userid}, "requestid": ${booking.requestid}, "time": "none"}`
-  
+
   client.publish(`${booking.userid}`, bookingExist ? bookingFailed : bookingSuccess)
 }
