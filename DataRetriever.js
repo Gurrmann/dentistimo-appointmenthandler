@@ -3,7 +3,6 @@ var client = mqtt.connect('mqtt://test.mosquitto.org')
 var mongoose = require('mongoose')
 mongoose.connect('mongodb://localhost/dentistimoDB')
 var Appointment = require('./models/appointment')
-var Dentistry = require('./models/dentistry')
 
 client.on('connect', function () {
   client.subscribe('validBookingRequest')
@@ -41,7 +40,6 @@ var checkBooking = (booking) => {
   
 
 
-// Saves appointment to the requested time slot
 var saveAppointment = (data) => {
   var appointmentData = {
     dentistry: data.dentistid,
@@ -55,7 +53,6 @@ var saveAppointment = (data) => {
     }
   })
 }
-
 
 var notifyUser = (bookingExist, booking) => {
   var time = booking.time.split(' ')[1]
