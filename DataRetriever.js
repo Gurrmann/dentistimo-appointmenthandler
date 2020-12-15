@@ -81,4 +81,4 @@ setInterval(function(){
       client.publish('appointments', JSON.stringify(result), options)
     }
   })
-}, 5000) // 5 sec
+}, 2000) // 2 sec
