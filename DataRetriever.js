@@ -85,4 +85,4 @@ setInterval(function(){
       client.publish('appointments', JSON.stringify(result), options)
     }
   })
-}, 3000) // 3 sec
+}, 2000) // 2 sec
