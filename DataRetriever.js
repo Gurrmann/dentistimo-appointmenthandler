@@ -78,7 +78,7 @@ setInterval(function(){
   var today = new Date() // Gets todays date
   today.setHours(0)      // Clears hours, minutes etc.
   // Finds all appointments which was booked today or later
-  Appointment.find({dateInMilliseconds: {$gte: today.getTime()}}, function(err, result){
+  Appointment.find({dateInMilliseconds: {$gte: today.getTime()}}, 'dentistry timeSlot', function(err, result){
     if(err){
       console.log(err)
     } else {
