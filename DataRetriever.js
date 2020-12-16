@@ -16,7 +16,7 @@ client.on('message', function (topic, message) {
 
   try {
     var timeSlot = JSON.parse(message)
-    if(timeSlot!==null && typeof timeSlot==='object') {
+    if(timeSlot !== null && typeof timeSlot === 'object') {
       checkBooking(timeSlot)
     }
   } catch (error) {
@@ -31,31 +31,32 @@ var checkBooking = (booking) => {
   if(typeof booking.numberOfDentists !== 'undefined'){
     dentistNumber = booking.numberOfDentists
   }
-      
-      // Finds the amount of booked appointments on the booking's requested time slot and checks if the request can be booked by comparing the number to
-      // the amount of dentists working at the requested dentistry.
-      Appointment.find({ dentistry: booking.dentistid, timeSlot: booking.time},function(err, result) {
-        if (err)
-        var bookingExist
-        if (result.length < dentistNumber) {
-          bookingExist = false
-          saveAppointment(booking)
-          notifyUser(bookingExist, booking)
-        }
-        else {
-          bookingExist = true
-          notifyUser(bookingExist, booking)
-        }
-      })
+  // Finds the amount of booked appointments on the booking's requested time slot 
+  // and checks if the request can be booked by comparing the number to
+  // the amount of dentists working at the requested dentistry.
+  Appointment.find({ dentistry: booking.dentistid, timeSlot: booking.time},function(err, result) {
+    if (err)
+    var bookingExist
+    if (result.length < dentistNumber) {
+      bookingExist = false
+      saveAppointment(booking)
+      notifyUser(bookingExist, booking)
     }
-  
-
+    else {
+      bookingExist = true
+      notifyUser(bookingExist, booking)
+    }
+  })
+}
 
 var saveAppointment = (data) => {
+  // Create a number representing the day the appointment was made, to be used for filtering
+  var dateInMilliseconds = new Date(data.time.split(' ')[0]) // Gets the YYYY-MM-DD
   var appointmentData = {
     dentistry: data.dentistid,
     timeSlot: data.time,
     userId: data.userid,
+    dateInMilliseconds: dateInMilliseconds.getTime()
   }
   var appointment = new Appointment(appointmentData)
   appointment.save(function(err, result){
@@ -74,11 +75,14 @@ var notifyUser = (bookingExist, booking) => {
 }
 
 setInterval(function(){
-  Appointment.find(function(err, result){
+  var today = new Date() // Gets todays date
+  today.setHours(0)      // Clears hours, minutes etc.
+  // Finds all appointments which was booked today or later
+  Appointment.find({dateInMilliseconds: {$gte: today.getTime()}}, function(err, result){
     if(err){
       console.log(err)
     } else {
       client.publish('appointments', JSON.stringify(result), options)
     }
   })
-}, 5000) // 5 sec
+}, 3000) // 3 sec
