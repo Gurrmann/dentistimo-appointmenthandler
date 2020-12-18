@@ -1,5 +1,5 @@
 var mqtt = require('mqtt')
-var client = mqtt.connect('mqtt://test.mosquitto.org')
+var client = mqtt.connect('mqtt://broker.hivemq.com')
 var mongoose = require('mongoose')
 mongoose.connect('mongodb://localhost/dentistimoDB')
 var Appointment = require('./models/appointment')
