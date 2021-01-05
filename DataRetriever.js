@@ -21,10 +21,6 @@ function exitHandler(options, exitCode) {
   }
 }
 
-var options = {
-  retain: true
-}
-
 client.on('connect', function () {
   client.subscribe('validBookingRequest')
 })
@@ -87,13 +83,15 @@ var notifyUser = (bookingExist, booking) => {
   var time = booking.time.split(' ')[1]
   let bookingSuccess = `{"userid": ${booking.userid}, "requestid": ${booking.requestid}, "time": ${JSON.stringify(time)}}`
   let bookingFailed = `{"userid": ${booking.userid}, "requestid": ${booking.requestid}, "time": "none"}`
+  let options = { qos: 2 } // make sure response is sent and only once
 
-  client.publish(`${booking.userid}`, bookingExist ? bookingFailed : bookingSuccess)
+  client.publish(`${booking.userid}`, bookingExist ? bookingFailed : bookingSuccess, options)
 }
 
 setInterval(function(){
   var today = new Date() // Gets todays date
   today.setHours(0)      // Clears hours, minutes etc.
+  let options = { retain: true }
   // Finds all appointments which was booked today or later
   Appointment.find({dateInMilliseconds: {$gte: today.getTime()}}, 'dentistry timeSlot', function(err, result){
     if(err){
